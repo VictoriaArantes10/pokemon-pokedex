@@ -19,7 +19,7 @@ namespace pokedex.Controllers
 
             int? i = limit * pagina;
 
-            var pokemons = new List<Pokemon>();
+            var pokemonsList = new PokemonList();
             foreach(var p in result.Results)
             {
                 i++;
@@ -28,10 +28,11 @@ namespace pokedex.Controllers
                 pokemon.Name = p.Name;
                 pokemon.Url = $"https://assets.pokemon.com/assets/cms2/img/pokedex/detail/{((i < 1000) ? i?.ToString("#000") : i)}.png";
                 
-                pokemons.Add(pokemon);
+                pokemonsList.Pokemons.Add(pokemon);
+                pokemonsList.Page = pagina;
             }
 
-            return View(pokemons);
+            return View(pokemonsList);
         }
 
         public async Task<IActionResult> Details(int id)
@@ -43,6 +44,10 @@ namespace pokedex.Controllers
 
             var content = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<PokemonDetails.Root>(content);
+
+            result.ImageUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{id}.png";
+
+        
 
             return PartialView(result);
 
